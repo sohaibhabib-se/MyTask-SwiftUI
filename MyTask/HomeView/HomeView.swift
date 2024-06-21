@@ -9,12 +9,12 @@ import SwiftUI
 
 struct HomeView: View {
     
-    @ObservedObject var taskViewModel: TaskViewModel = TaskViewModel()
+    @ObservedObject var taskViewModel: TaskViewModel = TaskViewModelFactory.createTaskViewModel()
     @State private var pickerFilters: [String] = ["Active", "Closed"]
     @State private var defaultPickerSelectedItem: String = "Active"
     @State private var showAddTaskView: Bool = false
     @State private var showTaskDetailView: Bool = false
-    @State private var selectedTask: Task = Task(id: 0, name: "", description: "", isCompleted: false, finishDate: Date())
+    @State private var selectedTask: Task = Task.createEmptyTask()
     @State private var refreshTaskList: Bool = false
     
     
@@ -26,7 +26,7 @@ struct HomeView: View {
                     Text($0)
                 }
             }.pickerStyle(.segmented).onChange(of: defaultPickerSelectedItem) { newValue in
-                taskViewModel.getTasks(isActive: defaultPickerSelectedItem == "Active")
+                taskViewModel.getTasks(isComleted: defaultPickerSelectedItem == "Active")
             }
             
             List(taskViewModel.tasks, id: \.id) { task in
@@ -47,10 +47,10 @@ struct HomeView: View {
                 }
             }
             .onAppear{
-                taskViewModel.getTasks(isActive: true)
+                taskViewModel.getTasks(isComleted: true)
             }
             .onChange(of: refreshTaskList, perform: { newValue in
-                taskViewModel.getTasks(isActive: defaultPickerSelectedItem == "Active")
+                taskViewModel.getTasks(isComleted: defaultPickerSelectedItem == "Active")
             })
             .listStyle(.plain)
                 .navigationTitle("Home")

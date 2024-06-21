@@ -10,10 +10,19 @@ import SwiftUI
 struct AddTaskView: View {
     
     @ObservedObject var taskViewModel: TaskViewModel
-    @State private var taskToAdd: Task = Task(id: 0, name: "", description: "", isCompleted: false, finishDate: Date())
+    @State private var taskToAdd: Task = Task.createEmptyTask()
     @Binding var refreshTaskList: Bool
-    
     @Binding var showAddTaskView: Bool
+    @State var showDirtyCheckAlert: Bool = false
+    
+    var pickerDateRange: ClosedRange<Date> {
+        let calender = Calendar.current
+        let currentDateComponenet = calender.dateComponents([.day, .month, .year, .hour, .minute], from: Date())
+        let startingDate = DateComponents(year: currentDateComponenet.year, month: currentDateComponenet.month, day: currentDateComponenet.day, hour: currentDateComponenet.hour, minute: currentDateComponenet.minute)
+        let endingDateComponent = DateComponents(year: 2024, month: 12, day: 31)
+        
+        return calender.date(from: startingDate)! ... calender.date(from: endingDateComponent)!
+    }
     
     var body: some View {
         NavigationStack{
@@ -24,37 +33,58 @@ struct AddTaskView: View {
                 }
                 
                 Section(header: Text("Task date/time")) {
-                    DatePicker("Task date", selection: $taskToAdd.finishDate)
+                    DatePicker("Task date", selection: $taskToAdd.finishDate, in: pickerDateRange)
                 }
             }
             .navigationTitle("Add Task")
             .toolbar{
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button{
-//                        print("Cancel Preessed")
-                        showAddTaskView.toggle()
+                        if(!taskToAdd.name.isEmpty) {
+                            showDirtyCheckAlert.toggle()
+                        } else {
+                            showAddTaskView.toggle()
+                        }
                     } label: {
                         Text("Cancel")
+                    }.alert("Save Task", isPresented: $showDirtyCheckAlert) {
+                        Button{
+                            showAddTaskView.toggle()
+                        } label: {
+                            Text("Cancel")
+                        }
+                        
+                        Button{
+                            addTask()
+                        } label: {
+                            Text("Save")
+                        }
+                    } message: {
+                        Text("Would you like to save the task?")
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button{
-                        if(taskViewModel.addTask(task: taskToAdd)) {
-                            showAddTaskView.toggle()
-                            refreshTaskList.toggle()
-                        }
+                        addTask()
                     } label: {
                         Text("Add")
-                    }
+                    }.disabled(taskToAdd.name.isEmpty)
                 }
 
             }
         }
         
     }
+    
+    private func addTask() {
+        if(taskViewModel.addTask(task: taskToAdd)) {
+            showAddTaskView.toggle()
+            refreshTaskList.toggle()
+        }
+    }
 }
 
 #Preview {
-    AddTaskView(taskViewModel: TaskViewModel(), refreshTaskList: .constant(false), showAddTaskView: .constant(false))
+    AddTaskView(taskViewModel: TaskViewModelFactory.createTaskViewModel(), refreshTaskList: .constant(false), showAddTaskView: .constant(false))
 }

@@ -21,6 +21,10 @@
 		DA48BC9C2C240D6A001872E8 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA48BC9B2C240D6A001872E8 /* Date+Extension.swift */; };
 		DA48BC9F2C2437CC001872E8 /* AddTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA48BC9E2C2437CC001872E8 /* AddTaskView.swift */; };
 		DA48BCA22C244B53001872E8 /* TaskDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA48BCA12C244B53001872E8 /* TaskDetailView.swift */; };
+		DAF7DE4A2C258EC200F81286 /* TaskEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF7DE482C258EC200F81286 /* TaskEntity+CoreDataClass.swift */; };
+		DAF7DE4B2C258EC200F81286 /* TaskEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF7DE492C258EC200F81286 /* TaskEntity+CoreDataProperties.swift */; };
+		DAF7DE4F2C2594A800F81286 /* TaskRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF7DE4E2C2594A800F81286 /* TaskRepository.swift */; };
+		DAF7DE512C25A66E00F81286 /* TaskViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF7DE502C25A66E00F81286 /* TaskViewModelFactory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +62,10 @@
 		DA48BC9B2C240D6A001872E8 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
 		DA48BC9E2C2437CC001872E8 /* AddTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTaskView.swift; sourceTree = "<group>"; };
 		DA48BCA12C244B53001872E8 /* TaskDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailView.swift; sourceTree = "<group>"; };
+		DAF7DE482C258EC200F81286 /* TaskEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TaskEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
+		DAF7DE492C258EC200F81286 /* TaskEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TaskEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		DAF7DE4E2C2594A800F81286 /* TaskRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskRepository.swift; sourceTree = "<group>"; };
+		DAF7DE502C25A66E00F81286 /* TaskViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModelFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +116,7 @@
 		DA48BC612C24025C001872E8 /* MyTask */ = {
 			isa = PBXGroup;
 			children = (
+				DAF7DE4D2C25948300F81286 /* Repository */,
 				DA48BCA02C244B34001872E8 /* TaskDetailView */,
 				DA48BC9D2C2437B5001872E8 /* AddTaskView */,
 				DA48BC9A2C240D4E001872E8 /* Extension */,
@@ -151,6 +160,7 @@
 		DA48BC912C24089C001872E8 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				DAF7DE4C2C2593F000F81286 /* CoreData Models */,
 				DA48BC922C2408AB001872E8 /* Task.swift */,
 			);
 			path = Model;
@@ -160,6 +170,7 @@
 			isa = PBXGroup;
 			children = (
 				DA48BC952C240A22001872E8 /* TaskViewModel.swift */,
+				DAF7DE502C25A66E00F81286 /* TaskViewModelFactory.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -194,6 +205,23 @@
 				DA48BCA12C244B53001872E8 /* TaskDetailView.swift */,
 			);
 			path = TaskDetailView;
+			sourceTree = "<group>";
+		};
+		DAF7DE4C2C2593F000F81286 /* CoreData Models */ = {
+			isa = PBXGroup;
+			children = (
+				DAF7DE482C258EC200F81286 /* TaskEntity+CoreDataClass.swift */,
+				DAF7DE492C258EC200F81286 /* TaskEntity+CoreDataProperties.swift */,
+			);
+			path = "CoreData Models";
+			sourceTree = "<group>";
+		};
+		DAF7DE4D2C25948300F81286 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				DAF7DE4E2C2594A800F81286 /* TaskRepository.swift */,
+			);
+			path = Repository;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -332,6 +360,10 @@
 				DA48BC9F2C2437CC001872E8 /* AddTaskView.swift in Sources */,
 				DA48BC992C240B67001872E8 /* HomeView.swift in Sources */,
 				DA48BC9C2C240D6A001872E8 /* Date+Extension.swift in Sources */,
+				DAF7DE512C25A66E00F81286 /* TaskViewModelFactory.swift in Sources */,
+				DAF7DE4F2C2594A800F81286 /* TaskRepository.swift in Sources */,
+				DAF7DE4A2C258EC200F81286 /* TaskEntity+CoreDataClass.swift in Sources */,
+				DAF7DE4B2C258EC200F81286 /* TaskEntity+CoreDataProperties.swift in Sources */,
 				DA48BC962C240A22001872E8 /* TaskViewModel.swift in Sources */,
 				DA48BC632C24025C001872E8 /* MyTaskApp.swift in Sources */,
 				DA48BCA22C244B53001872E8 /* TaskDetailView.swift in Sources */,
