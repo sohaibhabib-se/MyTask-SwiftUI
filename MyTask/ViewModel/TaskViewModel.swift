@@ -8,6 +8,8 @@
 import Foundation
 final class TaskViewModel: ObservableObject {
     @Published var tasks : [Task] = []
+    @Published var errorMessage: String = ""
+    @Published var showError: Bool = false
 //    private var tempTask = Task.createMockTask()
     
     private var taskRepository: TaskRepository
@@ -17,7 +19,15 @@ final class TaskViewModel: ObservableObject {
     }
     
     func getTasks(isComleted: Bool) {
-        self.tasks = taskRepository.get(isCompleted: !isComleted)
+//        self.tasks = taskRepository.get(isCompleted: !isComleted)
+        let fetchOperationResult = taskRepository.get(isCompleted: !isComleted)
+        switch fetchOperationResult {
+        case .success(let fetchedTasks):
+            self.errorMessage = ""
+            self.tasks = fetchedTasks
+        case .failure(let failure):
+            processOperationError(failure)
+        }
 //        tasks = tempTask.filter({$0.isCompleted == !isActive})
     }
     
@@ -25,7 +35,8 @@ final class TaskViewModel: ObservableObject {
 //        let taskId = Int.random(in: 4...100)
 //        let taskToAdd = Task(id: taskId, name: task.name, description: task.description, isCompleted: task.isCompleted, finishDate: task.finishDate)
 //        tempTask.append(taskToAdd)
-        return taskRepository.add(task: task)
+        let addOperationResult = taskRepository.add(task: task)
+        return processOperationResult(operationResult: addOperationResult)
     }
     
     func updateTask(task: Task) -> Bool {
@@ -36,7 +47,8 @@ final class TaskViewModel: ObservableObject {
 //            tempTask[index].isCompleted = task.isCompleted
 //            return true
 //        }
-        return taskRepository.update(task: task)
+        let updateOperationResult = taskRepository.update(task: task)
+        return processOperationResult(operationResult: updateOperationResult)
     }
     
     func deleteTask(task: Task) -> Bool {
@@ -44,6 +56,25 @@ final class TaskViewModel: ObservableObject {
 //            tempTask.remove(at: index)
 //            return true
 //        }
-        return taskRepository.delete(task: task)
+        let deleteOperationResult = taskRepository.delete(task: task)
+        return processOperationResult(operationResult: deleteOperationResult)
+    }
+    
+    private func processOperationResult(operationResult: Result<Bool, TaskRepositoryError>) -> Bool {
+        switch operationResult {
+        case .success(let success):
+            self.errorMessage = ""
+            return success
+        case .failure(let failure):
+            processOperationError(failure)
+            return false
+        }
+    }
+    private func processOperationError(_ error: TaskRepositoryError) {
+        switch error {
+        case .operationFailure(let errorMessage):
+            self.showError = true
+            self.errorMessage = errorMessage
+        }
     }
 }

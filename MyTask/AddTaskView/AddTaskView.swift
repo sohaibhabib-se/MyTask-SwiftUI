@@ -37,6 +37,13 @@ struct AddTaskView: View {
                 }
             }
             .navigationTitle("Add Task")
+            .alert("Task Error", isPresented: $taskViewModel.showError, actions: {
+               Button(action: {}) {
+                   Text("Ok")
+               }
+           }, message: {
+               Text(taskViewModel.errorMessage)
+           })
             .toolbar{
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button{

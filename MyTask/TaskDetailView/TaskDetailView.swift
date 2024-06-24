@@ -84,6 +84,13 @@ struct TaskDetailView: View {
                 }
 
             }
+            .alert("Task Error", isPresented: $taskViewModel.showError, actions: {
+               Button(action: {}) {
+                   Text("Ok")
+               }
+           }, message: {
+               Text(taskViewModel.errorMessage)
+           })
         }
     }
 }

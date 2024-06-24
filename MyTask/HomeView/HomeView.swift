@@ -16,6 +16,7 @@ struct HomeView: View {
     @State private var showTaskDetailView: Bool = false
     @State private var selectedTask: Task = Task.createEmptyTask()
     @State private var refreshTaskList: Bool = false
+    @State private var showErrorAlert: Bool = false
     
     
     var body: some View {
@@ -51,6 +52,15 @@ struct HomeView: View {
             }
             .onChange(of: refreshTaskList, perform: { newValue in
                 taskViewModel.getTasks(isComleted: defaultPickerSelectedItem == "Active")
+            })
+            /*.onChange(of: taskViewModel.errorMessage, perform: { newValue in
+                showErrorAlert.toggle()
+             })*/.alert("Task Error", isPresented: $taskViewModel.showError, actions: {
+                Button(action: {}) {
+                    Text("Ok")
+                }
+            }, message: {
+                Text(taskViewModel.errorMessage)
             })
             .listStyle(.plain)
                 .navigationTitle("Home")
