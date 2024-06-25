@@ -11,7 +11,7 @@ struct TaskDetailView: View {
     @ObservedObject var taskViewModel: TaskViewModel
     @Binding var showTaskDetailView: Bool
     @Binding var selectedTask: Task
-    @Binding var refreshTaskList: Bool
+//    @Binding var refreshTaskList: Bool
     
     @State var showDeleteALert: Bool = false
     
@@ -49,10 +49,7 @@ struct TaskDetailView: View {
                         }
                         
                         Button (role: .destructive){
-                            if(taskViewModel.deleteTask(task: selectedTask)) {
-                                showTaskDetailView.toggle()
-                                refreshTaskList.toggle()
-                            }
+                            taskViewModel.deleteTask(task: selectedTask)
                         } label: {
                             Text("Yes")
                         }
@@ -60,6 +57,14 @@ struct TaskDetailView: View {
                         Text("Would you like to delete the task \(selectedTask.name)?")
                     }
                 }
+                .onDisappear(perform: {
+                    taskViewModel.cancelSubscription()
+                })
+                .onReceive(taskViewModel.shouldDismiss, perform: { shouldDismiss in
+                    if(shouldDismiss) {
+                        showTaskDetailView.toggle()
+                    }
+                })
             }
             .navigationTitle("Task Detail")
             .toolbar{
@@ -74,10 +79,7 @@ struct TaskDetailView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button{
-                        if(taskViewModel.updateTask(task: selectedTask)) {
-                            showTaskDetailView.toggle()
-                            refreshTaskList.toggle()
-                        }
+                        taskViewModel.updateTask(task: selectedTask)
                     } label: {
                         Text("Update")
                     }.disabled(selectedTask.name.isEmpty)
@@ -96,5 +98,5 @@ struct TaskDetailView: View {
 }
 
 #Preview {
-    TaskDetailView(taskViewModel: TaskViewModelFactory.createTaskViewModel(), showTaskDetailView: .constant(false), selectedTask: .constant(Task.createEmptyTask()), refreshTaskList: .constant(false))
+    TaskDetailView(taskViewModel: TaskViewModelFactory.createTaskViewModel(), showTaskDetailView: .constant(false), selectedTask: .constant(Task.createEmptyTask()))
 }

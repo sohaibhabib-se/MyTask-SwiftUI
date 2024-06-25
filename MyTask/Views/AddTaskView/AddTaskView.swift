@@ -11,7 +11,7 @@ struct AddTaskView: View {
     
     @ObservedObject var taskViewModel: TaskViewModel
     @State private var taskToAdd: Task = Task.createEmptyTask()
-    @Binding var refreshTaskList: Bool
+//    @Binding var refreshTaskList: Bool
     @Binding var showAddTaskView: Bool
     @State var showDirtyCheckAlert: Bool = false
     
@@ -35,7 +35,11 @@ struct AddTaskView: View {
                 Section(header: Text("Task date/time")) {
                     DatePicker("Task date", selection: $taskToAdd.finishDate, in: pickerDateRange)
                 }
-            }
+            }.onReceive(taskViewModel.shouldDismiss, perform: { shouldDismiss in
+                if shouldDismiss {
+                    showAddTaskView.toggle()
+                }
+            })
             .navigationTitle("Add Task")
             .alert("Task Error", isPresented: $taskViewModel.showError, actions: {
                Button(action: {}) {
@@ -43,6 +47,8 @@ struct AddTaskView: View {
                }
            }, message: {
                Text(taskViewModel.errorMessage)
+           }).onDisappear(perform: {
+               taskViewModel.cancelSubscription()
            })
             .toolbar{
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -85,13 +91,10 @@ struct AddTaskView: View {
     }
     
     private func addTask() {
-        if(taskViewModel.addTask(task: taskToAdd)) {
-            showAddTaskView.toggle()
-            refreshTaskList.toggle()
-        }
+        taskViewModel.addTask(task: taskToAdd)
     }
 }
 
 #Preview {
-    AddTaskView(taskViewModel: TaskViewModelFactory.createTaskViewModel(), refreshTaskList: .constant(false), showAddTaskView: .constant(false))
+    AddTaskView(taskViewModel: TaskViewModelFactory.createTaskViewModel(), showAddTaskView: .constant(false))
 }

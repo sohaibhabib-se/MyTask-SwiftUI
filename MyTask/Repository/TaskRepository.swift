@@ -7,35 +7,38 @@
 
 import Foundation
 import CoreData
+import Combine
 
 protocol TaskRepository {
-    func get(isCompleted: Bool) -> Result<[Task], TaskRepositoryError>
-    func update(task: Task) -> Result<Bool, TaskRepositoryError>
-    func add(task: Task) -> Result<Bool, TaskRepositoryError>
-    func delete(task: Task) -> Result<Bool, TaskRepositoryError>
+    func get(isCompleted: Bool) -> AnyPublisher<Result<[Task], TaskRepositoryError>, Never>
+    func update(task: Task) -> AnyPublisher<Result<Bool, TaskRepositoryError>, Never>
+    func add(task: Task) -> AnyPublisher<Result<Bool, TaskRepositoryError>, Never>
+    func delete(task: Task) -> AnyPublisher<Result<Bool, TaskRepositoryError>, Never>
 }
 
 final class TaskRepositoryImplementation: TaskRepository {
     
     private let managedObjectContext: NSManagedObjectContext = PersistenceController.shared.viewContext
     
-    func get(isCompleted: Bool) -> Result<[Task], TaskRepositoryError> {
+    func get(isCompleted: Bool) -> AnyPublisher<Result<[Task], TaskRepositoryError>, Never> {
         let fetchRequest = TaskEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "isCompleted = %@", NSNumber(value: isCompleted))
         do {
             let result = try managedObjectContext.fetch(fetchRequest)
             if(!result.isEmpty) {
-                return .success(result.map({Task(id: $0.id!, name: $0.name ?? "", description: $0.taskDescription ?? "", isCompleted: $0.isCompleted, finishDate: $0.finishDate ?? Date())}))
+                let clientContract = result.map({Task(id: $0.id!, name: $0.name ?? "", description: $0.taskDescription ?? "", isCompleted: $0.isCompleted, finishDate: $0.finishDate ?? Date())})
+                
+                return Just(.success(clientContract)).eraseToAnyPublisher()
             }
             
-//            return .success([])
-            return .failure(.operationFailure("Unable to fetch"))
+            return Just(.success([])).eraseToAnyPublisher()
+//            return .failure(.operationFailure("Unable to fetch"))
         } catch {
-            return .failure(.operationFailure("Unable to fetch the records, please try again later or contact support."))
+            return Just(.failure(.operationFailure("Unable to fetch the records, please try again later or contact support."))).eraseToAnyPublisher()
         }
     }
     
-    func update(task: Task) -> Result<Bool, TaskRepositoryError> {
+    func update(task: Task) -> AnyPublisher<Result<Bool, TaskRepositoryError>, Never> {
         let fetchRequest = TaskEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id = %@", task.id as CVarArg)
         do {
@@ -46,21 +49,21 @@ final class TaskRepositoryImplementation: TaskRepository {
                 existingTask.isCompleted = task.isCompleted
                 
                 try managedObjectContext.save()
-                return .success(true)
+                return Just(.success(true)).eraseToAnyPublisher()
             } else {
                 print("No task found with \(task.id)")
-                return .failure(.operationFailure("No task found with id \(task.id)"))
+                return Just(.failure(.operationFailure("No task found with id \(task.id)"))).eraseToAnyPublisher()
             }
 //            if(existingTask != nil) {
 //               
 //            }
         } catch {
             managedObjectContext.rollback()
-            return .failure(.operationFailure("Unable to fetch update record, please try again or contact support."))
+            return Just(.failure(.operationFailure("Unable to fetch update record, please try again or contact support."))).eraseToAnyPublisher()
         }
     }
     
-    func add(task: Task) -> Result<Bool, TaskRepositoryError> {
+    func add(task: Task) -> AnyPublisher<Result<Bool, TaskRepositoryError>, Never> {
         let taskEntity = TaskEntity(context: managedObjectContext)
         taskEntity.id = UUID()
         taskEntity.isCompleted = false
@@ -70,28 +73,28 @@ final class TaskRepositoryImplementation: TaskRepository {
         
         do {
             try managedObjectContext.save()
-            return .success(true)
+            return Just(.success(true)).eraseToAnyPublisher()
         }
         catch {
-            return .failure(.operationFailure("Unable to add task, please try again or contact suport."))
+            return Just(.failure(.operationFailure("Unable to add task, please try again or contact suport."))).eraseToAnyPublisher()
         }
     }
     
-    func delete(task: Task) -> Result<Bool, TaskRepositoryError> {
+    func delete(task: Task) -> AnyPublisher<Result<Bool, TaskRepositoryError>, Never> {
         let fetchRequest = TaskEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id = %@", task.id as CVarArg)
         do {
             if let existingTask = try managedObjectContext.fetch(fetchRequest).first {
                 managedObjectContext.delete(existingTask)
                 try managedObjectContext.save()
-                return .success(true)
+                return Just(.success(true)).eraseToAnyPublisher()
             } else {
                 print("No task found to delete with id: \(task.id)")
-                return .failure(.operationFailure("Unable to delete record, please try again or contact support."))
+                return Just(.failure(.operationFailure("Unable to delete record, please try again or contact support."))).eraseToAnyPublisher()
             }
         } catch {
             managedObjectContext.rollback()
-            return .failure(.operationFailure("Unable to delete record, please try again or contact support."))
+            return Just(.failure(.operationFailure("Unable to delete record, please try again or contact support."))).eraseToAnyPublisher()
         }
     }
     
